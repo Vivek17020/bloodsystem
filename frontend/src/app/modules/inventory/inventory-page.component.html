@@ -1,0 +1,119 @@
+<div class="inventory-page">
+  <div class="page-header">
+    <h1><mat-icon>inventory_2</mat-icon> Blood Inventory</h1>
+    <div class="header-actions">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search</mat-label>
+        <input matInput [(ngModel)]="searchText" (keyup)="applyFilter()" placeholder="Blood type, bank...">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+      <button mat-raised-button color="warn" (click)="showForm = !showForm">
+        <mat-icon>{{ showForm ? 'close' : 'add' }}</mat-icon>
+        {{ showForm ? 'Cancel' : 'Add Item' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Add Form -->
+  <mat-card class="dashboard-card add-form-card" *ngIf="showForm">
+    <mat-card-header><mat-card-title>Add Inventory Item</mat-card-title></mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="addForm" (ngSubmit)="onSubmit()" class="form-container">
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Blood Type</mat-label>
+            <mat-select formControlName="bloodType">
+              <mat-option *ngFor="let bt of bloodTypes" [value]="bt">{{ bt }}</mat-option>
+            </mat-select>
+            <mat-error>Required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Units</mat-label>
+            <input matInput type="number" formControlName="units" min="1">
+            <mat-error>Min 1</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Collection Date</mat-label>
+            <input matInput type="date" formControlName="collectionDate">
+            <mat-error>Required</mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Expiry Date</mat-label>
+            <input matInput type="date" formControlName="expiryDate">
+            <mat-error>Required</mat-error>
+          </mat-form-field>
+        </div>
+
+        <mat-form-field appearance="outline" style="width:100%">
+          <mat-label>Notes (optional)</mat-label>
+          <input matInput formControlName="notes">
+        </mat-form-field>
+
+        <div class="form-actions">
+          <button mat-raised-button color="warn" type="submit" [disabled]="isSubmitting">Add to Inventory</button>
+          <button mat-button type="button" (click)="showForm = false">Cancel</button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Inventory Table -->
+  <mat-card class="dashboard-card">
+    <mat-card-content>
+      <table mat-table [dataSource]="dataSource" matSort class="full-table">
+        <ng-container matColumnDef="bloodType">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Blood Type</th>
+          <td mat-cell *matCellDef="let r">
+            <app-blood-type-chip [bloodType]="r.bloodType" size="sm"></app-blood-type-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="units">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Units</th>
+          <td mat-cell *matCellDef="let r">{{ r.units }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="collectionDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Collected</th>
+          <td mat-cell *matCellDef="let r">{{ r.collectionDate | date:'MMM d, y' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="expiryDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Expires</th>
+          <td mat-cell *matCellDef="let r">
+            <span [class.expiring-soon]="isExpiringSoon(r.expiryDate)">
+              {{ r.expiryDate | date:'MMM d, y' }}
+              <mat-icon *ngIf="isExpiringSoon(r.expiryDate)" class="expire-icon" matTooltip="Expiring soon">warning</mat-icon>
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+          <td mat-cell *matCellDef="let r"><span [class]="getStatusClass(r.status)">{{ r.status }}</span></td>
+        </ng-container>
+
+        <ng-container matColumnDef="bloodBankName">
+          <th mat-header-cell *matHeaderCellDef>Blood Bank</th>
+          <td mat-cell *matCellDef="let r">{{ r.bloodBankName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let r">
+            <button mat-icon-button color="warn" (click)="deleteItem(r.id)" matTooltip="Delete">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="table-row"></tr>
+      </table>
+      <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons></mat-paginator>
+    </mat-card-content>
+  </mat-card>
+</div>

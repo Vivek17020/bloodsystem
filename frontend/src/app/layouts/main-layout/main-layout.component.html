@@ -1,0 +1,25 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav
+    #sidenav
+    [mode]="isMobile ? 'over' : 'side'"
+    [opened]="!isMobile"
+    class="app-sidenav">
+    <app-sidebar [currentUser]="currentUser"></app-sidebar>
+  </mat-sidenav>
+
+  <mat-sidenav-content class="sidenav-content">
+    <app-navbar
+      [currentUser]="currentUser"
+      [unreadCount]="unreadCount"
+      (menuToggle)="toggleSidenav()"
+      (logoutEvent)="logout()">
+    </app-navbar>
+
+    <div class="page-content">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
+<!-- Global floating chatbot — visible on all authenticated pages -->
+<app-chatbot></app-chatbot>

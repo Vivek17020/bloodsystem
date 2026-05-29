@@ -1,0 +1,109 @@
+<div class="bb-dashboard">
+  <div class="page-header">
+    <h1><mat-icon>bloodtype</mat-icon> Blood Bank Dashboard</h1>
+    <button mat-raised-button color="warn" routerLink="/app/inventory">
+      <mat-icon>inventory_2</mat-icon> Manage Inventory
+    </button>
+  </div>
+
+  <!-- Blood Stock Grid -->
+  <div class="section-label">Current Blood Stock</div>
+  <div class="stock-grid">
+    <mat-card *ngFor="let s of stockSummary" class="stock-card dashboard-card" [class]="getStockClass(s.availableUnits)">
+      <app-blood-type-chip [bloodType]="s.bloodType" size="lg"></app-blood-type-chip>
+      <div class="stock-numbers">
+        <span class="available">{{ s.availableUnits }}</span>
+        <span class="label">Available</span>
+        <span class="reserved">{{ s.reservedUnits }} reserved</span>
+        <span class="expiring" *ngIf="s.expiringUnits > 0">⚠ {{ s.expiringUnits }} expiring</span>
+      </div>
+      <div class="stock-status-bar">
+        <mat-progress-bar mode="determinate"
+          [value]="(s.availableUnits / (s.totalUnits || 1)) * 100"
+          [color]="s.availableUnits < 5 ? 'warn' : 'primary'">
+        </mat-progress-bar>
+        <span>{{ s.totalUnits }} total</span>
+      </div>
+    </mat-card>
+  </div>
+
+  <div class="bottom-row">
+    <!-- Expiring Items -->
+    <mat-card class="dashboard-card expiry-card">
+      <mat-card-header>
+        <mat-card-title>
+          <mat-icon color="warn">hourglass_empty</mat-icon>
+          Expiring Within 7 Days
+        </mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <table mat-table [dataSource]="expiringItems">
+          <ng-container matColumnDef="bloodType">
+            <th mat-header-cell *matHeaderCellDef>Type</th>
+            <td mat-cell *matCellDef="let r"><app-blood-type-chip [bloodType]="r.bloodType" size="sm"></app-blood-type-chip></td>
+          </ng-container>
+          <ng-container matColumnDef="units">
+            <th mat-header-cell *matHeaderCellDef>Units</th>
+            <td mat-cell *matCellDef="let r">{{ r.units }}</td>
+          </ng-container>
+          <ng-container matColumnDef="expiryDate">
+            <th mat-header-cell *matHeaderCellDef>Expires</th>
+            <td mat-cell *matCellDef="let r" style="color:#c62828;font-weight:600">{{ r.expiryDate | date:'MMM d' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let r"><span class="badge-warning">{{ r.status }}</span></td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="expiryColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: expiryColumns;"></tr>
+        </table>
+        <p class="no-data" *ngIf="expiringItems.length === 0">No items expiring soon</p>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Pending Requests -->
+    <mat-card class="dashboard-card requests-card">
+      <mat-card-header>
+        <mat-card-title>Pending Blood Requests</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <table mat-table [dataSource]="pendingRequests">
+          <ng-container matColumnDef="bloodType">
+            <th mat-header-cell *matHeaderCellDef>Type</th>
+            <td mat-cell *matCellDef="let r"><app-blood-type-chip [bloodType]="r.bloodType" size="sm"></app-blood-type-chip></td>
+          </ng-container>
+          <ng-container matColumnDef="units">
+            <th mat-header-cell *matHeaderCellDef>Units</th>
+            <td mat-cell *matCellDef="let r">{{ r.units }}</td>
+          </ng-container>
+          <ng-container matColumnDef="requesterName">
+            <th mat-header-cell *matHeaderCellDef>Requester</th>
+            <td mat-cell *matCellDef="let r">{{ r.requesterName }}</td>
+          </ng-container>
+          <ng-container matColumnDef="urgency">
+            <th mat-header-cell *matHeaderCellDef>Urgency</th>
+            <td mat-cell *matCellDef="let r"><span [class]="getUrgencyClass(r.urgency)">{{ r.urgency }}</span></td>
+          </ng-container>
+          <ng-container matColumnDef="requestDate">
+            <th mat-header-cell *matHeaderCellDef>Date</th>
+            <td mat-cell *matCellDef="let r">{{ r.requestDate | date:'MMM d' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let r">
+              <button mat-icon-button color="primary" (click)="approveRequest(r.id)" matTooltip="Approve">
+                <mat-icon>check_circle</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="rejectRequest(r.id)" matTooltip="Reject">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="requestColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: requestColumns;"></tr>
+        </table>
+        <p class="no-data" *ngIf="pendingRequests.length === 0">No pending requests</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

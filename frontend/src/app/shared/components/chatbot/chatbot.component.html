@@ -1,0 +1,80 @@
+<!-- Floating Chat Button -->
+<div class="chat-fab" (click)="toggleChat()" @fadeIn>
+  <div class="unread-badge" *ngIf="unreadCount > 0 && !isOpen">{{ unreadCount }}</div>
+  <mat-icon>{{ isOpen ? 'close' : 'chat' }}</mat-icon>
+  <span class="fab-label" *ngIf="!isOpen">Chat Support</span>
+</div>
+
+<!-- Chat Window -->
+<div class="chat-window" *ngIf="isOpen" @slideUp>
+  <!-- Header -->
+  <div class="chat-header">
+    <div class="chat-avatar">
+      <mat-icon>volunteer_activism</mat-icon>
+    </div>
+    <div class="chat-title">
+      <span class="title">BMS Assistant</span>
+      <span class="status"><span class="dot"></span> Online</span>
+    </div>
+    <button mat-icon-button (click)="toggleChat()" class="close-btn">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- Messages -->
+  <div class="chat-messages" #messagesContainer>
+    <ng-container *ngFor="let msg of messages">
+      <!-- Bot message -->
+      <div class="message bot-message" *ngIf="msg.sender === 'bot'" @fadeIn>
+        <div class="bot-avatar">
+          <mat-icon>smart_toy</mat-icon>
+        </div>
+        <div class="msg-content">
+          <div class="msg-bubble bot-bubble" [innerHTML]="formatText(msg.text)"></div>
+          <div class="msg-time">{{ msg.timestamp | date:'h:mm a' }}</div>
+          <!-- Quick reply options -->
+          <div class="options-row" *ngIf="msg.options?.length">
+            <button
+              *ngFor="let opt of msg.options"
+              class="option-chip"
+              (click)="sendOption(opt)">
+              {{ opt }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- User message -->
+      <div class="message user-message" *ngIf="msg.sender === 'user'" @fadeIn>
+        <div class="msg-content">
+          <div class="msg-bubble user-bubble">{{ msg.text }}</div>
+          <div class="msg-time user-time">{{ msg.timestamp | date:'h:mm a' }}</div>
+        </div>
+      </div>
+    </ng-container>
+
+    <!-- Typing indicator -->
+    <div class="message bot-message" *ngIf="isTyping" @fadeIn>
+      <div class="bot-avatar"><mat-icon>smart_toy</mat-icon></div>
+      <div class="msg-bubble bot-bubble typing-bubble">
+        <span class="typing-dot"></span>
+        <span class="typing-dot"></span>
+        <span class="typing-dot"></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Input -->
+  <div class="chat-input-area">
+    <input
+      class="chat-input"
+      [(ngModel)]="userInput"
+      (keydown)="onKeydown($event)"
+      placeholder="Type a message..."
+      maxlength="500"
+      autocomplete="off">
+    <button class="send-btn" (click)="sendMessage()" [disabled]="!userInput.trim()">
+      <mat-icon>send</mat-icon>
+    </button>
+  </div>
+</div>

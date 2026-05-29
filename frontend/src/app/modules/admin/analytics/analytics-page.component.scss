@@ -1,0 +1,83 @@
+.analytics-page { max-width: 1400px; }
+
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.kpi-card {
+  padding: 20px;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+
+  .kpi-value { font-size: 36px; font-weight: 700; color: #c62828; }
+  .kpi-label { font-size: 13px; color: #757575; margin: 4px 0 8px; }
+
+  .kpi-trend {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #2e7d32;
+    mat-icon { font-size: 16px; width: 16px; height: 16px; }
+
+    &.down { color: #c62828; }
+    &.up { color: #2e7d32; }
+  }
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.monthly-card { grid-column: span 2; }
+
+// Bar chart
+.bar-chart { margin-top: 8px; }
+.bar-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  .bar-label { width: 36px; font-weight: 700; font-size: 13px; text-align: right; }
+  .bar-track { flex: 1; background: #f5f5f5; border-radius: 4px; height: 20px; overflow: hidden; }
+  .bar-fill { height: 100%; background: linear-gradient(90deg, #c62828, #ef5350); border-radius: 4px; transition: width 0.5s ease; }
+  .bar-value { width: 40px; font-size: 13px; color: #555; }
+}
+
+.status-list { margin-top: 8px; }
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  .status-label { width: 90px; font-size: 12px; font-weight: 600; color: #555; }
+  .status-bar { flex: 1; background: #f5f5f5; border-radius: 4px; height: 16px; }
+  .status-fill { height: 100%; background: #1565c0; border-radius: 4px; transition: width 0.5s; }
+  .status-count { width: 32px; text-align: right; font-size: 13px; font-weight: 600; }
+}
+
+.trend-table { width: 100%; }
+
+.bank-list { margin-top: 8px; }
+.bank-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  .rank { width: 20px; font-weight: 700; color: #c62828; font-size: 14px; }
+  .bank-name { width: 130px; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bank-bar-track { flex: 1; background: #f5f5f5; border-radius: 4px; height: 16px; }
+  .bank-bar-fill { height: 100%; background: linear-gradient(90deg, #2e7d32, #66bb6a); border-radius: 4px; transition: width 0.5s; }
+  .bank-units { width: 44px; font-size: 12px; color: #555; text-align: right; }
+}
+
+@media (max-width: 900px) {
+  .kpi-row { grid-template-columns: 1fr 1fr; }
+  .charts-grid { grid-template-columns: 1fr; }
+  .monthly-card { grid-column: span 1; }
+}

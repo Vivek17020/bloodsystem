@@ -1,0 +1,154 @@
+<div class="donations-page">
+  <div class="page-header">
+    <h1><mat-icon>favorite</mat-icon> Donate & Support</h1>
+    <p class="subtitle">Your financial contributions fund blood drives, equipment, and awareness campaigns.</p>
+  </div>
+
+  <!-- Success Banner -->
+  <div class="success-banner" *ngIf="lastPaymentSuccess">
+    <mat-icon>check_circle</mat-icon>
+    <div>
+      <strong>Thank you for your generous donation!</strong>
+      <p>Your contribution helps save lives. A receipt has been sent to your email.</p>
+    </div>
+    <button mat-icon-button (click)="lastPaymentSuccess = false"><mat-icon>close</mat-icon></button>
+  </div>
+
+  <div class="main-grid">
+    <!-- Payment Form -->
+    <mat-card class="dashboard-card payment-card">
+      <mat-card-header>
+        <mat-card-title>Make a Donation</mat-card-title>
+        <mat-card-subtitle>Secured by Razorpay — UPI, Cards & Net Banking accepted</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+
+        <!-- Preset Tiers -->
+        <div class="tier-label">Quick select amount</div>
+        <div class="tiers-grid">
+          <div *ngFor="let tier of tiers"
+            class="tier-card"
+            [class.selected]="paymentForm.get('amount')?.value === tier.amount"
+            (click)="selectTier(tier)">
+            <mat-icon>{{ tier.icon }}</mat-icon>
+            <span class="tier-name">{{ tier.label }}</span>
+            <span class="tier-amount">₹{{ tier.amount }}</span>
+            <span class="tier-desc">{{ tier.description }}</span>
+          </div>
+        </div>
+
+        <form [formGroup]="paymentForm" (ngSubmit)="onPay()" class="form-container">
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Amount (₹)</mat-label>
+              <input matInput type="number" formControlName="amount" min="1">
+              <mat-icon matPrefix>currency_rupee</mat-icon>
+              <mat-error>Minimum ₹1 required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Purpose</mat-label>
+              <mat-select formControlName="purpose">
+                <mat-option *ngFor="let p of purposes" [value]="p">{{ p }}</mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+
+          <div class="form-row">
+            <mat-form-field appearance="outline">
+              <mat-label>Your Name</mat-label>
+              <input matInput formControlName="name">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Email</mat-label>
+              <input matInput type="email" formControlName="email">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Phone (optional)</mat-label>
+              <input matInput formControlName="phone">
+            </mat-form-field>
+          </div>
+
+          <button mat-raised-button color="warn" type="submit"
+            [disabled]="isProcessing || paymentForm.invalid"
+            class="pay-btn">
+            <mat-spinner *ngIf="isProcessing" diameter="20"></mat-spinner>
+            <mat-icon *ngIf="!isProcessing">payment</mat-icon>
+            {{ isProcessing ? 'Processing...' : 'Pay ₹' + paymentForm.get("amount")?.value + ' with Razorpay' }}
+          </button>
+
+          <div class="secure-badge">
+            <mat-icon>lock</mat-icon>
+            <span>256-bit SSL encrypted · Powered by Razorpay</span>
+          </div>
+        </form>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Info Panel -->
+    <div class="info-panel">
+      <mat-card class="dashboard-card impact-card">
+        <mat-card-header><mat-card-title>Your Impact</mat-card-title></mat-card-header>
+        <mat-card-content>
+          <div class="impact-item">
+            <span class="impact-amount">₹100</span>
+            <span class="impact-desc">funds 1 blood test kit</span>
+          </div>
+          <div class="impact-item">
+            <span class="impact-amount">₹500</span>
+            <span class="impact-desc">supports storage equipment maintenance</span>
+          </div>
+          <div class="impact-item">
+            <span class="impact-amount">₹1,000</span>
+            <span class="impact-desc">sponsors a community blood drive</span>
+          </div>
+          <div class="impact-item">
+            <span class="impact-amount">₹2,500</span>
+            <span class="impact-desc">equips a mobile blood collection unit</span>
+          </div>
+        </mat-card-content>
+      </mat-card>
+
+      <mat-card class="dashboard-card payments-card">
+        <mat-card-header><mat-card-title>Payment Methods</mat-card-title></mat-card-header>
+        <mat-card-content>
+          <div class="payment-methods">
+            <div class="pm-item"><mat-icon>phonelink</mat-icon> UPI (PhonePe, GPay, Paytm)</div>
+            <div class="pm-item"><mat-icon>credit_card</mat-icon> Credit / Debit Cards</div>
+            <div class="pm-item"><mat-icon>account_balance</mat-icon> Net Banking</div>
+            <div class="pm-item"><mat-icon>wallet</mat-icon> Razorpay Wallet</div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    </div>
+  </div>
+
+  <!-- Payment History -->
+  <mat-card class="dashboard-card history-card" *ngIf="paymentHistory.length > 0">
+    <mat-card-header><mat-card-title>Your Donation History</mat-card-title></mat-card-header>
+    <mat-card-content>
+      <table mat-table [dataSource]="paymentHistory" class="full-table">
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef>Date</th>
+          <td mat-cell *matCellDef="let r">{{ r.createdAt | date:'MMM d, y' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="purpose">
+          <th mat-header-cell *matHeaderCellDef>Purpose</th>
+          <td mat-cell *matCellDef="let r">{{ r.purpose }}</td>
+        </ng-container>
+        <ng-container matColumnDef="amount">
+          <th mat-header-cell *matHeaderCellDef>Amount</th>
+          <td mat-cell *matCellDef="let r" style="font-weight:700;color:#2e7d32">₹{{ r.amount / 100 }}</td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let r">
+            <span [class]="r.status === 'SUCCESS' ? 'badge-success' : 'badge-warning'">{{ r.status }}</span>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="historyColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: historyColumns;"></tr>
+      </table>
+    </mat-card-content>
+  </mat-card>
+</div>

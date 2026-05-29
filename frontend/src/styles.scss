@@ -1,0 +1,196 @@
+@import '@angular/material/prebuilt-themes/indigo-pink.css';
+
+// Global Healthcare Theme - Red & White
+:root {
+  --primary-red: #c62828;
+  --primary-red-light: #ef5350;
+  --primary-red-dark: #8e0000;
+  --accent-color: #ffffff;
+  --background-light: #fafafa;
+  --card-shadow: 0 2px 8px rgba(0,0,0,0.12);
+  --border-radius: 8px;
+  --sidebar-width: 260px;
+  --navbar-height: 64px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Roboto', sans-serif;
+  background-color: var(--background-light);
+  color: #212121;
+}
+
+// Material overrides
+.mat-toolbar.blood-toolbar {
+  background: linear-gradient(135deg, var(--primary-red-dark), var(--primary-red));
+  color: white;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.mat-sidenav-container {
+  height: 100vh;
+}
+
+// Custom scrollbar
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--primary-red-light);
+  border-radius: 3px;
+}
+
+// Dashboard cards
+.dashboard-card {
+  border-radius: var(--border-radius);
+  box-shadow: var(--card-shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.18);
+  }
+}
+
+// Status badges
+.badge-critical { background: #c62828; color: white; border-radius: 4px; padding: 2px 8px; font-size: 12px; }
+.badge-warning  { background: #f57c00; color: white; border-radius: 4px; padding: 2px 8px; font-size: 12px; }
+.badge-success  { background: #2e7d32; color: white; border-radius: 4px; padding: 2px 8px; font-size: 12px; }
+.badge-info     { background: #0277bd; color: white; border-radius: 4px; padding: 2px 8px; font-size: 12px; }
+
+// Loading skeletons
+.skeleton {
+  background: linear-gradient(90deg, #eeeeee 25%, #e0e0e0 50%, #eeeeee 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+@keyframes loading {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+// Blood type chips
+.blood-type-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 14px;
+  color: white;
+  background: var(--primary-red);
+  border: 2px solid var(--primary-red-dark);
+}
+
+// Tables
+.mat-table {
+  width: 100%;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
+}
+
+.mat-header-row {
+  background: var(--primary-red) !important;
+  color: white;
+}
+
+.mat-header-cell {
+  color: white !important;
+  font-weight: 600 !important;
+}
+
+.mat-row:hover {
+  background: #ffebee;
+}
+
+// Page header
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+
+  h1 {
+    font-size: 24px;
+    font-weight: 500;
+    color: var(--primary-red-dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    mat-icon {
+      color: var(--primary-red);
+    }
+  }
+}
+
+// Stat cards
+.stat-card {
+  padding: 20px;
+  border-radius: var(--border-radius);
+  background: white;
+  box-shadow: var(--card-shadow);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  .stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+  }
+
+  .stat-content {
+    h2 {
+      font-size: 28px;
+      font-weight: 700;
+      line-height: 1;
+    }
+    p {
+      font-size: 13px;
+      color: #757575;
+      margin-top: 4px;
+    }
+  }
+}
+
+// Form styling
+.form-container {
+  max-width: 600px;
+
+  mat-form-field {
+    width: 100%;
+    margin-bottom: 8px;
+  }
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}

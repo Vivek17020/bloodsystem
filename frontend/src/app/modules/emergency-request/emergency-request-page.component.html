@@ -1,0 +1,94 @@
+<div class="emergency-page">
+  <div class="page-header">
+    <h1><mat-icon>emergency</mat-icon> Blood Requests</h1>
+  </div>
+
+  <mat-tab-group [(selectedIndex)]="selectedTab" color="warn">
+    <!-- Emergency Tab -->
+    <mat-tab>
+      <ng-template mat-tab-label>
+        <mat-icon>emergency</mat-icon>&nbsp; Emergency
+        <span class="tab-badge" *ngIf="emergencyRequests.length">{{ emergencyRequests.length }}</span>
+      </ng-template>
+
+      <div class="emergency-banner" *ngIf="emergencyRequests.length > 0">
+        <mat-icon>warning</mat-icon>
+        <span>{{ emergencyRequests.length }} critical/urgent blood request(s) require immediate attention!</span>
+      </div>
+
+      <div class="emergency-cards" *ngIf="emergencyRequests.length > 0">
+        <mat-card *ngFor="let r of emergencyRequests" class="emergency-card"
+          [class.critical]="r.urgency === 'CRITICAL'"
+          [class.urgent]="r.urgency === 'URGENT'">
+          <div class="emg-top">
+            <app-blood-type-chip [bloodType]="r.bloodType" size="lg"></app-blood-type-chip>
+            <div class="emg-meta">
+              <div class="emg-title">{{ r.requesterName }}</div>
+              <div class="emg-sub">{{ r.units }} units needed • {{ r.requiredByDate | date:'MMM d' }}</div>
+              <span [class]="getUrgencyClass(r.urgency)">{{ r.urgency }}</span>
+            </div>
+            <div class="emg-status">
+              <span [class]="getStatusClass(r.status)">{{ r.status }}</span>
+            </div>
+          </div>
+          <div class="emg-reason">{{ r.reason }}</div>
+          <div class="emg-actions" *ngIf="canApprove && r.status === 'PENDING'">
+            <button mat-raised-button color="primary" (click)="approve(r.id)">
+              <mat-icon>check</mat-icon> Approve
+            </button>
+            <button mat-raised-button color="warn" (click)="reject(r.id)">
+              <mat-icon>close</mat-icon> Reject
+            </button>
+          </div>
+        </mat-card>
+      </div>
+      <div class="no-data" *ngIf="emergencyRequests.length === 0 && !isLoading">
+        <mat-icon>check_circle</mat-icon>
+        <p>No emergency requests at this time</p>
+      </div>
+    </mat-tab>
+
+    <!-- All Requests Tab -->
+    <mat-tab label="All Requests">
+      <div class="tab-content">
+        <table mat-table [dataSource]="allRequests" class="full-table">
+          <ng-container matColumnDef="bloodType">
+            <th mat-header-cell *matHeaderCellDef>Type</th>
+            <td mat-cell *matCellDef="let r"><app-blood-type-chip [bloodType]="r.bloodType" size="sm"></app-blood-type-chip></td>
+          </ng-container>
+          <ng-container matColumnDef="requesterName">
+            <th mat-header-cell *matHeaderCellDef>Requester</th>
+            <td mat-cell *matCellDef="let r">{{ r.requesterName }}</td>
+          </ng-container>
+          <ng-container matColumnDef="units">
+            <th mat-header-cell *matHeaderCellDef>Units</th>
+            <td mat-cell *matCellDef="let r">{{ r.units }}</td>
+          </ng-container>
+          <ng-container matColumnDef="urgency">
+            <th mat-header-cell *matHeaderCellDef>Urgency</th>
+            <td mat-cell *matCellDef="let r"><span [class]="getUrgencyClass(r.urgency)">{{ r.urgency }}</span></td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th mat-header-cell *matHeaderCellDef>Status</th>
+            <td mat-cell *matCellDef="let r"><span [class]="getStatusClass(r.status)">{{ r.status }}</span></td>
+          </ng-container>
+          <ng-container matColumnDef="requestDate">
+            <th mat-header-cell *matHeaderCellDef>Date</th>
+            <td mat-cell *matCellDef="let r">{{ r.requestDate | date:'MMM d, y' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let r">
+              <ng-container *ngIf="canApprove && r.status === 'PENDING'">
+                <button mat-icon-button color="primary" (click)="approve(r.id)" matTooltip="Approve"><mat-icon>check_circle</mat-icon></button>
+                <button mat-icon-button color="warn" (click)="reject(r.id)" matTooltip="Reject"><mat-icon>cancel</mat-icon></button>
+              </ng-container>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="columns"></tr>
+          <tr mat-row *matRowDef="let row; columns: columns;"></tr>
+        </table>
+      </div>
+    </mat-tab>
+  </mat-tab-group>
+</div>

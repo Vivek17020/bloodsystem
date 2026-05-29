@@ -1,0 +1,28 @@
+.inventory-page { max-width: 1400px; }
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.search-field {
+  width: 280px;
+  ::ng-deep .mat-mdc-form-field-subscript-wrapper { display: none; }
+}
+
+.add-form-card { margin-bottom: 20px; }
+.form-row { display: flex; gap: 16px; flex-wrap: wrap; mat-form-field { flex: 1; min-width: 160px; } }
+.form-actions { display: flex; gap: 12px; margin-top: 8px; }
+.full-table { width: 100%; }
+
+.expiring-soon {
+  color: #c62828;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  .expire-icon { font-size: 16px; width: 16px; height: 16px; }
+}
+
+.table-row:hover { background: #fff8f8; }

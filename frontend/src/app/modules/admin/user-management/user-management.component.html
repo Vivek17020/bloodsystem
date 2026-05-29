@@ -1,0 +1,194 @@
+<div class="user-management">
+  <!-- Header -->
+  <div class="page-header">
+    <h1><mat-icon>manage_accounts</mat-icon> User Management</h1>
+    <button mat-raised-button color="warn" (click)="showCreateForm = !showCreateForm">
+      <mat-icon>{{ showCreateForm ? 'close' : 'person_add' }}</mat-icon>
+      {{ showCreateForm ? 'Cancel' : 'Create User' }}
+    </button>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="stats-row">
+    <div class="stat-chip total"><mat-icon>group</mat-icon> {{ stats.total }} Total</div>
+    <div class="stat-chip active"><mat-icon>check_circle</mat-icon> {{ stats.active }} Active</div>
+    <div class="stat-chip donor"><mat-icon>volunteer_activism</mat-icon> {{ stats.donor }} Donors</div>
+    <div class="stat-chip hospital"><mat-icon>local_hospital</mat-icon> {{ stats.hospital }} Hospitals</div>
+    <div class="stat-chip bloodbank"><mat-icon>bloodtype</mat-icon> {{ stats.bloodBank }} Blood Banks</div>
+    <div class="stat-chip admin"><mat-icon>admin_panel_settings</mat-icon> {{ stats.admin }} Admins</div>
+  </div>
+
+  <!-- Create User Form -->
+  <mat-card class="dashboard-card create-form" *ngIf="showCreateForm">
+    <mat-card-header>
+      <mat-card-title>Create New User</mat-card-title>
+      <mat-card-subtitle>Fill in the details below to add a new user to the system</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <form [formGroup]="createForm" (ngSubmit)="onCreate()" class="form-container">
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Username</mat-label>
+            <input matInput formControlName="username">
+            <mat-error *ngIf="createForm.get('username')?.hasError('required')">Required</mat-error>
+            <mat-error *ngIf="createForm.get('username')?.hasError('minlength')">Min 3 characters</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Email</mat-label>
+            <input matInput type="email" formControlName="email">
+            <mat-error>Valid email required</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Password</mat-label>
+            <input matInput type="password" formControlName="password">
+            <mat-error>Min 6 characters</mat-error>
+          </mat-form-field>
+        </div>
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>First Name</mat-label>
+            <input matInput formControlName="firstName">
+            <mat-error>Required</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Last Name</mat-label>
+            <input matInput formControlName="lastName">
+            <mat-error>Required</mat-error>
+          </mat-form-field>
+          <mat-form-field appearance="outline">
+            <mat-label>Phone</mat-label>
+            <input matInput formControlName="phone">
+          </mat-form-field>
+        </div>
+        <div class="form-row">
+          <mat-form-field appearance="outline">
+            <mat-label>Role</mat-label>
+            <mat-select formControlName="role">
+              <mat-option *ngFor="let r of roles" [value]="r">{{ r }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline" *ngIf="needsBloodType">
+            <mat-label>Blood Type</mat-label>
+            <mat-select formControlName="bloodType">
+              <mat-option *ngFor="let bt of ['A+','A-','B+','B-','AB+','AB-','O+','O-']" [value]="bt">{{ bt }}</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline" *ngIf="needsOrg">
+            <mat-label>Organization Name</mat-label>
+            <input matInput formControlName="organizationName">
+          </mat-form-field>
+        </div>
+        <div class="form-actions">
+          <button mat-raised-button color="warn" type="submit" [disabled]="isSubmitting">
+            <mat-spinner *ngIf="isSubmitting" diameter="18"></mat-spinner>
+            Create User
+          </button>
+          <button mat-button type="button" (click)="showCreateForm = false">Cancel</button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Filters -->
+  <mat-card class="dashboard-card filters-card">
+    <div class="filters-row">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search users</mat-label>
+        <input matInput [(ngModel)]="searchText" (keyup)="applyFilter()" placeholder="Name, email, username...">
+        <mat-icon matSuffix>search</mat-icon>
+      </mat-form-field>
+      <mat-form-field appearance="outline" class="role-filter">
+        <mat-label>Filter by Role</mat-label>
+        <mat-select [(ngModel)]="selectedRoleFilter" (selectionChange)="applyRoleFilter()">
+          <mat-option value="">All Roles</mat-option>
+          <mat-option *ngFor="let r of roles" [value]="r">{{ r }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </mat-card>
+
+  <!-- Users Table -->
+  <mat-card class="dashboard-card">
+    <mat-card-content>
+      <table mat-table [dataSource]="dataSource" matSort class="users-table">
+
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>#</th>
+          <td mat-cell *matCellDef="let u">{{ u.id }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="username">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Username</th>
+          <td mat-cell *matCellDef="let u">
+            <div class="user-cell">
+              <div class="user-avatar" [style.background]="getRoleColor(u.role)">
+                {{ u.firstName?.charAt(0) }}{{ u.lastName?.charAt(0) }}
+              </div>
+              <span class="username-text">{{ u.username }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+          <td mat-cell *matCellDef="let u">{{ u.email }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="firstName">
+          <th mat-header-cell *matHeaderCellDef>Full Name</th>
+          <td mat-cell *matCellDef="let u">{{ u.firstName }} {{ u.lastName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="role">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Role</th>
+          <td mat-cell *matCellDef="let u">
+            <mat-select [value]="u.role" class="role-select"
+              (selectionChange)="changeRole(u, $event.value)"
+              [style.color]="getRoleColor(u.role)">
+              <mat-option *ngFor="let r of roles" [value]="r"
+                [style.color]="getRoleColor(r)">{{ r }}</mat-option>
+            </mat-select>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="enabled">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let u">
+            <span [class]="u.enabled ? 'badge-success' : 'badge-critical'">
+              {{ u.enabled ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="createdAt">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Joined</th>
+          <td mat-cell *matCellDef="let u">{{ u.createdAt | date:'MMM d, y' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Actions</th>
+          <td mat-cell *matCellDef="let u">
+            <button mat-icon-button
+              [color]="u.enabled ? 'warn' : 'primary'"
+              (click)="toggleEnable(u)"
+              [matTooltip]="u.enabled ? 'Deactivate' : 'Activate'">
+              <mat-icon>{{ u.enabled ? 'block' : 'check_circle' }}</mat-icon>
+            </button>
+            <button mat-icon-button color="warn"
+              (click)="deleteUser(u.id)"
+              matTooltip="Delete user"
+              [disabled]="u.role === 'ADMIN'">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;" class="user-row"
+          [class.inactive-row]="!row.enabled"></tr>
+      </table>
+
+      <mat-paginator [pageSizeOptions]="[10, 25, 50]" showFirstLastButtons></mat-paginator>
+    </mat-card-content>
+  </mat-card>
+</div>

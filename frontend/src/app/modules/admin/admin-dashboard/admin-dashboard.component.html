@@ -1,0 +1,195 @@
+<app-loading-spinner></app-loading-spinner>
+
+<div class="dashboard-page">
+  <!-- Page Header -->
+  <div class="page-header">
+    <h1><mat-icon>dashboard</mat-icon> Admin Dashboard</h1>
+    <button mat-raised-button color="warn" (click)="loadData()">
+      <mat-icon>refresh</mat-icon> Refresh
+    </button>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-grid" *ngIf="stats">
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#ffebee">
+        <mat-icon style="color:#c62828">volunteer_activism</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h2>{{ stats.totalDonors }}</h2>
+        <p>Total Donors</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#e8f5e9">
+        <mat-icon style="color:#2e7d32">bloodtype</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h2>{{ stats.totalUnitsAvailable }}</h2>
+        <p>Units Available</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#fff3e0">
+        <mat-icon style="color:#e65100">pending_actions</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h2>{{ stats.pendingRequests }}</h2>
+        <p>Pending Requests</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#fce4ec">
+        <mat-icon style="color:#ad1457">emergency</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h2>{{ stats.criticalRequests }}</h2>
+        <p>Critical Requests</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#e3f2fd">
+        <mat-icon style="color:#1565c0">local_hospital</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h2>{{ stats.totalHospitals }}</h2>
+        <p>Hospitals</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon" style="background:#f3e5f5">
+        <mat-icon style="color:#6a1b9a">warning</mat-icon>
+      </div>
+      <div class="stat-content">
+        <h2>{{ stats.expiringUnits }}</h2>
+        <p>Expiring Soon</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Skeleton loading -->
+  <div class="stats-grid" *ngIf="isLoading">
+    <div class="stat-card" *ngFor="let i of [1,2,3,4,5,6]">
+      <div class="skeleton" style="width:56px;height:56px;border-radius:12px"></div>
+      <div class="stat-content">
+        <div class="skeleton" style="width:60px;height:28px;margin-bottom:6px"></div>
+        <div class="skeleton" style="width:100px;height:14px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Blood Type Distribution -->
+  <div class="section-row">
+    <mat-card class="blood-dist-card dashboard-card">
+      <mat-card-header>
+        <mat-card-title>Blood Type Distribution</mat-card-title>
+        <mat-card-subtitle>Current inventory by blood type</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="blood-type-grid">
+          <div *ngFor="let item of bloodTypeDistribution" class="bt-item">
+            <app-blood-type-chip [bloodType]="item.bloodType"></app-blood-type-chip>
+            <div class="bt-details">
+              <span class="bt-count">{{ item.count }} units</span>
+              <mat-progress-bar mode="determinate" [value]="item.percentage" color="warn"></mat-progress-bar>
+              <span class="bt-pct">{{ item.percentage | number:'1.0-1' }}%</span>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="alerts-card dashboard-card">
+      <mat-card-header>
+        <mat-card-title>System Alerts</mat-card-title>
+        <mat-card-subtitle>Items requiring attention</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="alert-item alert-critical" *ngIf="stats?.criticalRequests">
+          <mat-icon>emergency</mat-icon>
+          <div>
+            <strong>{{ stats?.criticalRequests }} Critical Blood Requests</strong>
+            <p>Immediate action required</p>
+          </div>
+        </div>
+        <div class="alert-item alert-warning" *ngIf="stats?.expiringUnits">
+          <mat-icon>hourglass_empty</mat-icon>
+          <div>
+            <strong>{{ stats?.expiringUnits }} Units Expiring</strong>
+            <p>Expiring within 7 days</p>
+          </div>
+        </div>
+        <div class="alert-item alert-warning" *ngIf="stats?.lowStockAlerts">
+          <mat-icon>inventory</mat-icon>
+          <div>
+            <strong>{{ stats?.lowStockAlerts }} Low Stock Alerts</strong>
+            <p>Blood types below threshold</p>
+          </div>
+        </div>
+        <div class="no-alerts" *ngIf="!stats?.criticalRequests && !stats?.expiringUnits && !stats?.lowStockAlerts">
+          <mat-icon>check_circle</mat-icon>
+          <p>No alerts — system running normally</p>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+
+  <!-- Recent Requests Table -->
+  <mat-card class="dashboard-card requests-card">
+    <mat-card-header>
+      <mat-card-title>Recent Blood Requests</mat-card-title>
+      <div class="card-actions">
+        <button mat-stroked-button color="warn" routerLink="/app/emergency-requests">
+          View All <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </div>
+    </mat-card-header>
+    <mat-card-content>
+      <table mat-table [dataSource]="recentRequests" class="requests-table">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>#</th>
+          <td mat-cell *matCellDef="let r">{{ r.id }}</td>
+        </ng-container>
+        <ng-container matColumnDef="requesterName">
+          <th mat-header-cell *matHeaderCellDef>Requester</th>
+          <td mat-cell *matCellDef="let r">{{ r.requesterName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="bloodType">
+          <th mat-header-cell *matHeaderCellDef>Blood Type</th>
+          <td mat-cell *matCellDef="let r">
+            <app-blood-type-chip [bloodType]="r.bloodType" size="sm"></app-blood-type-chip>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="units">
+          <th mat-header-cell *matHeaderCellDef>Units</th>
+          <td mat-cell *matCellDef="let r">{{ r.units }}</td>
+        </ng-container>
+        <ng-container matColumnDef="urgency">
+          <th mat-header-cell *matHeaderCellDef>Urgency</th>
+          <td mat-cell *matCellDef="let r">
+            <span [class]="getUrgencyClass(r.urgency)">{{ r.urgency }}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let r">
+            <span [class]="getStatusClass(r.status)">{{ r.status }}</span>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="requestDate">
+          <th mat-header-cell *matHeaderCellDef>Date</th>
+          <td mat-cell *matCellDef="let r">{{ r.requestDate | date:'MMM d, y' }}</td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="requestColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: requestColumns;"></tr>
+      </table>
+      <p class="no-data" *ngIf="recentRequests.length === 0">No recent requests</p>
+    </mat-card-content>
+  </mat-card>
+</div>

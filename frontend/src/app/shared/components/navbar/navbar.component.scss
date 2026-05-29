@@ -1,0 +1,55 @@
+.app-navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.menu-btn { margin-right: 4px; }
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 18px;
+  font-weight: 600;
+
+  .brand-icon {
+    color: rgba(255,255,255,0.9);
+  }
+}
+
+.spacer { flex: 1; }
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: white;
+  border: 2px solid rgba(255,255,255,0.4);
+}
+
+.user-menu-header {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  strong {
+    font-size: 14px;
+  }
+
+  .role-badge {
+    font-size: 11px;
+    background: #c62828;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    align-self: flex-start;
+  }
+}

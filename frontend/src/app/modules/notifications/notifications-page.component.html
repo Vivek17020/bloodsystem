@@ -1,0 +1,48 @@
+<div class="notifications-page">
+  <div class="page-header">
+    <h1><mat-icon>notifications</mat-icon> Notifications
+      <span class="unread-chip" *ngIf="unreadCount > 0">{{ unreadCount }} unread</span>
+    </h1>
+    <button mat-stroked-button color="warn" *ngIf="unreadCount > 0" (click)="markAllRead()">
+      <mat-icon>done_all</mat-icon> Mark All Read
+    </button>
+  </div>
+
+  <div class="notifications-list" *ngIf="!isLoading">
+    <mat-card
+      *ngFor="let n of notifications"
+      class="notification-card dashboard-card"
+      [class.unread]="!n.isRead"
+      (click)="markRead(n.id)">
+      <div class="notif-icon" [style.background]="getTypeColor(n.type) + '22'" [style.color]="getTypeColor(n.type)">
+        <mat-icon>{{ getTypeIcon(n.type) }}</mat-icon>
+      </div>
+      <div class="notif-content">
+        <div class="notif-title">{{ n.title }}</div>
+        <div class="notif-message">{{ n.message }}</div>
+        <div class="notif-time">{{ n.createdAt | date:'MMM d, y h:mm a' }}</div>
+      </div>
+      <div class="notif-actions">
+        <div class="unread-dot" *ngIf="!n.isRead" matTooltip="Unread"></div>
+        <button mat-icon-button (click)="$event.stopPropagation(); delete(n.id)" matTooltip="Delete">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </mat-card>
+
+    <div class="empty-state" *ngIf="notifications.length === 0">
+      <mat-icon>notifications_none</mat-icon>
+      <p>You're all caught up! No notifications.</p>
+    </div>
+  </div>
+
+  <div class="loading-state" *ngIf="isLoading">
+    <div *ngFor="let i of [1,2,3,4,5]" class="skeleton-notif">
+      <div class="skeleton" style="width:44px;height:44px;border-radius:50%"></div>
+      <div style="flex:1">
+        <div class="skeleton" style="width:200px;height:16px;margin-bottom:6px"></div>
+        <div class="skeleton" style="width:320px;height:13px"></div>
+      </div>
+    </div>
+  </div>
+</div>

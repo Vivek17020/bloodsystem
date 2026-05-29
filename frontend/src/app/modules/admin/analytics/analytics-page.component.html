@@ -1,0 +1,125 @@
+<div class="analytics-page">
+  <div class="page-header">
+    <h1><mat-icon>bar_chart</mat-icon> Analytics & Reports</h1>
+    <button mat-raised-button color="warn">
+      <mat-icon>download</mat-icon> Export Report
+    </button>
+  </div>
+
+  <!-- KPI Row -->
+  <div class="kpi-row" *ngIf="stats">
+    <mat-card class="kpi-card">
+      <div class="kpi-value">{{ stats.totalDonors }}</div>
+      <div class="kpi-label">Total Donors</div>
+      <div class="kpi-trend up"><mat-icon>trending_up</mat-icon> +12% this month</div>
+    </mat-card>
+    <mat-card class="kpi-card">
+      <div class="kpi-value">{{ stats.totalUnitsAvailable }}</div>
+      <div class="kpi-label">Units Available</div>
+      <div class="kpi-trend" [class.down]="stats.totalUnitsAvailable < 100">
+        <mat-icon>{{ stats.totalUnitsAvailable >= 100 ? 'trending_up' : 'trending_down' }}</mat-icon>
+        Stock level
+      </div>
+    </mat-card>
+    <mat-card class="kpi-card">
+      <div class="kpi-value">{{ stats.monthlyDonations }}</div>
+      <div class="kpi-label">Monthly Donations</div>
+      <div class="kpi-trend up"><mat-icon>trending_up</mat-icon> This month</div>
+    </mat-card>
+    <mat-card class="kpi-card">
+      <div class="kpi-value">{{ stats.pendingRequests }}</div>
+      <div class="kpi-label">Pending Requests</div>
+      <div class="kpi-trend" [class.down]="stats.pendingRequests > 10">
+        <mat-icon>pending_actions</mat-icon> Awaiting action
+      </div>
+    </mat-card>
+  </div>
+
+  <div class="charts-grid">
+    <!-- Blood Type Distribution -->
+    <mat-card class="dashboard-card">
+      <mat-card-header>
+        <mat-card-title>Blood Type Inventory</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="bar-chart">
+          <div *ngFor="let item of bloodTypeDistribution" class="bar-row">
+            <span class="bar-label">{{ item.bloodType }}</span>
+            <div class="bar-track">
+              <div class="bar-fill" [style.width.%]="item.percentage"></div>
+            </div>
+            <span class="bar-value">{{ item.count }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Requests by Status -->
+    <mat-card class="dashboard-card">
+      <mat-card-header>
+        <mat-card-title>Requests by Status</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="status-list">
+          <div *ngFor="let item of requestsByStatus" class="status-row">
+            <span class="status-label">{{ item.status }}</span>
+            <div class="status-bar">
+              <div class="status-fill" [style.width.%]="(item.count / (stats?.pendingRequests || 1)) * 100"></div>
+            </div>
+            <span class="status-count">{{ item.count }}</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Monthly Trend Table -->
+    <mat-card class="dashboard-card monthly-card">
+      <mat-card-header>
+        <mat-card-title>Monthly Trend</mat-card-title>
+        <mat-card-subtitle>Donations vs Requests</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <table mat-table [dataSource]="monthlyTrend" class="trend-table">
+          <ng-container matColumnDef="month">
+            <th mat-header-cell *matHeaderCellDef>Month</th>
+            <td mat-cell *matCellDef="let r">{{ r.month }}</td>
+          </ng-container>
+          <ng-container matColumnDef="donations">
+            <th mat-header-cell *matHeaderCellDef>Donations</th>
+            <td mat-cell *matCellDef="let r" style="color:#2e7d32;font-weight:600">{{ r.donations }}</td>
+          </ng-container>
+          <ng-container matColumnDef="requests">
+            <th mat-header-cell *matHeaderCellDef>Requests</th>
+            <td mat-cell *matCellDef="let r" style="color:#c62828;font-weight:600">{{ r.requests }}</td>
+          </ng-container>
+          <ng-container matColumnDef="fulfilled">
+            <th mat-header-cell *matHeaderCellDef>Fulfilled</th>
+            <td mat-cell *matCellDef="let r" style="color:#0277bd;font-weight:600">{{ r.fulfilled }}</td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="['month','donations','requests','fulfilled']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['month','donations','requests','fulfilled'];"></tr>
+        </table>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Top Blood Banks -->
+    <mat-card class="dashboard-card">
+      <mat-card-header>
+        <mat-card-title>Top Blood Banks</mat-card-title>
+        <mat-card-subtitle>By available units</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="bank-list">
+          <div *ngFor="let bank of topBloodBanks; let i = index" class="bank-row">
+            <span class="rank">{{ i + 1 }}</span>
+            <span class="bank-name">{{ bank.name }}</span>
+            <div class="bank-bar-track">
+              <div class="bank-bar-fill" [style.width.%]="getBarWidth(bank.units)"></div>
+            </div>
+            <span class="bank-units">{{ bank.units }} u</span>
+          </div>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

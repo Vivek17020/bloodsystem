@@ -1,0 +1,14 @@
+.blood-type-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-weight: 700;
+  color: white;
+  background: #c62828;
+  border: 2px solid #8e0000;
+
+  &.size-sm  { width: 36px; height: 36px; font-size: 11px; }
+  &.size-md  { width: 48px; height: 48px; font-size: 14px; }
+  &.size-lg  { width: 64px; height: 64px; font-size: 18px; }
+}

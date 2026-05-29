@@ -1,0 +1,90 @@
+<div class="register-container">
+  <div class="register-card mat-elevation-z4">
+    <div class="register-header">
+      <mat-icon class="header-icon">water_drop</mat-icon>
+      <h2>Create Account</h2>
+      <p>Join the Blood Management System</p>
+    </div>
+
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+      <div class="role-selector">
+        <label class="role-label">Select Your Role</label>
+        <div class="role-options">
+          <div *ngFor="let role of roles" class="role-option"
+            [class.selected]="selectedRole === role.value"
+            (click)="registerForm.get('role')!.setValue(role.value)">
+            <mat-icon>{{ role.icon }}</mat-icon>
+            <span>{{ role.label }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>First Name</mat-label>
+          <input matInput formControlName="firstName">
+          <mat-error *ngIf="registerForm.get('firstName')?.hasError('required')">Required</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Last Name</mat-label>
+          <input matInput formControlName="lastName">
+          <mat-error *ngIf="registerForm.get('lastName')?.hasError('required')">Required</mat-error>
+        </mat-form-field>
+      </div>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="username">
+        <mat-icon matSuffix>person</mat-icon>
+        <mat-error *ngIf="registerForm.get('username')?.hasError('required')">Required</mat-error>
+        <mat-error *ngIf="registerForm.get('username')?.hasError('minlength')">Min 3 characters</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" type="email">
+        <mat-icon matSuffix>email</mat-icon>
+        <mat-error *ngIf="registerForm.get('email')?.hasError('required')">Required</mat-error>
+        <mat-error *ngIf="registerForm.get('email')?.hasError('email')">Invalid email</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput formControlName="password" [type]="hidePassword ? 'password' : 'text'">
+        <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="registerForm.get('password')?.hasError('required')">Required</mat-error>
+        <mat-error *ngIf="registerForm.get('password')?.hasError('minlength')">Min 6 characters</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Phone Number</mat-label>
+        <input matInput formControlName="phone">
+        <mat-icon matSuffix>phone</mat-icon>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" *ngIf="isDonor">
+        <mat-label>Blood Type</mat-label>
+        <mat-select formControlName="bloodType">
+          <mat-option *ngFor="let bt of bloodTypes" [value]="bt">{{ bt }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" *ngIf="isOrg">
+        <mat-label>Organization Name</mat-label>
+        <input matInput formControlName="organizationName">
+      </mat-form-field>
+
+      <button mat-raised-button color="warn" type="submit" class="submit-btn" [disabled]="isLoading">
+        <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
+        <mat-icon *ngIf="!isLoading">how_to_reg</mat-icon>
+        {{ isLoading ? 'Creating...' : 'Create Account' }}
+      </button>
+    </form>
+
+    <div class="register-footer">
+      <p>Already have an account? <a routerLink="/login">Sign In</a></p>
+    </div>
+  </div>
+</div>

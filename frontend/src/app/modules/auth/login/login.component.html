@@ -1,0 +1,43 @@
+<div class="login-container">
+  <div class="login-card mat-elevation-z4">
+    <div class="login-header">
+      <mat-icon class="header-icon">water_drop</mat-icon>
+      <h2>Welcome Back</h2>
+      <p>Sign in to Blood Management System</p>
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <mat-form-field appearance="outline">
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="username" placeholder="Enter username" autocomplete="username">
+        <mat-icon matSuffix>person</mat-icon>
+        <mat-error *ngIf="username.hasError('required')">Username is required</mat-error>
+        <mat-error *ngIf="username.hasError('minlength')">Minimum 3 characters</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Password</mat-label>
+        <input matInput formControlName="password" [type]="hidePassword ? 'password' : 'text'" autocomplete="current-password">
+        <button mat-icon-button matSuffix type="button" (click)="hidePassword = !hidePassword">
+          <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+        </button>
+        <mat-error *ngIf="password.hasError('required')">Password is required</mat-error>
+        <mat-error *ngIf="password.hasError('minlength')">Minimum 6 characters</mat-error>
+      </mat-form-field>
+
+      <button mat-raised-button color="warn" type="submit" class="submit-btn" [disabled]="isLoading">
+        <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
+        <mat-icon *ngIf="!isLoading">login</mat-icon>
+        {{ isLoading ? 'Signing in...' : 'Sign In' }}
+      </button>
+    </form>
+
+    <div class="login-footer">
+      <p>Don't have an account? <a routerLink="/register">Create Account</a></p>
+    </div>
+
+    <div class="demo-credentials">
+      <p><strong>Demo:</strong> admin / admin123 (ADMIN)</p>
+    </div>
+  </div>
+</div>

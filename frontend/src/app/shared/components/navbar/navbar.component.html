@@ -1,0 +1,41 @@
+<mat-toolbar class="blood-toolbar app-navbar">
+  <button mat-icon-button (click)="menuToggle.emit()" class="menu-btn">
+    <mat-icon>menu</mat-icon>
+  </button>
+
+  <div class="navbar-brand">
+    <mat-icon class="brand-icon">water_drop</mat-icon>
+    <span>Blood Management System</span>
+  </div>
+
+  <span class="spacer"></span>
+
+  <button mat-icon-button (click)="goToNotifications()" [matBadge]="unreadCount > 0 ? unreadCount : null"
+    matBadgeColor="warn" matTooltip="Notifications">
+    <mat-icon>notifications</mat-icon>
+  </button>
+
+  <button mat-icon-button [matMenuTriggerFor]="userMenu" class="user-btn">
+    <div class="avatar">
+      {{ currentUser?.username?.charAt(0)?.toUpperCase() || 'U' }}
+    </div>
+  </button>
+
+  <mat-menu #userMenu="matMenu" xPosition="before">
+    <div class="user-menu-header">
+      <strong>{{ currentUser?.username }}</strong>
+      <span class="role-badge">{{ currentUser?.role }}</span>
+    </div>
+    <mat-divider></mat-divider>
+    <button mat-menu-item>
+      <mat-icon>person</mat-icon> Profile
+    </button>
+    <button mat-menu-item>
+      <mat-icon>settings</mat-icon> Settings
+    </button>
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>logout</mat-icon> Logout
+    </button>
+  </mat-menu>
+</mat-toolbar>

@@ -1,0 +1,50 @@
+.bb-dashboard { max-width: 1400px; }
+.section-label { font-size: 15px; font-weight: 600; color: #555; margin-bottom: 12px; }
+
+.stock-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.stock-card {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  transition: all 0.2s;
+
+  &.stock-ok    { border-top: 3px solid #2e7d32; }
+  &.stock-low   { border-top: 3px solid #f57c00; }
+  &.stock-critical { border-top: 3px solid #c62828; background: #fff8f8; }
+  &.stock-empty { border-top: 3px solid #9e9e9e; opacity: 0.7; }
+}
+
+.stock-numbers {
+  display: flex;
+  flex-direction: column;
+  .available { font-size: 26px; font-weight: 700; color: #1a1a2e; line-height: 1; }
+  .label { font-size: 11px; color: #9e9e9e; text-transform: uppercase; letter-spacing: 0.5px; }
+  .reserved { font-size: 12px; color: #757575; margin-top: 4px; }
+  .expiring { font-size: 12px; color: #c62828; font-weight: 600; }
+}
+
+.stock-status-bar {
+  width: 100%;
+  span { font-size: 11px; color: #9e9e9e; margin-top: 4px; display: block; }
+}
+
+.bottom-row {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr;
+  gap: 20px;
+}
+
+.no-data { text-align: center; padding: 24px; color: #9e9e9e; }
+
+@media (max-width: 900px) {
+  .bottom-row { grid-template-columns: 1fr; }
+}
